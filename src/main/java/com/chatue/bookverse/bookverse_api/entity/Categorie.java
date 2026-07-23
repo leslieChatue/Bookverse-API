@@ -4,35 +4,30 @@ import java.io.Serializable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
+import jakarta.persistence.Entity;
 import java.util.Objects;
-
 
 /**
  * The persistent class for the categorie database table.
  * 
  */
-@Entity
-@Table(name="categorie")
-@NamedQuery(name="Categorie.findAll", query="SELECT c FROM Categorie c")
+
+@Table(name = "categorie")
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
 public class Categorie implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(unique=true, nullable=false)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(unique = true, nullable = false)
 	private Long id;
 
-	@Column(nullable=false, length=100)
+	@Column(nullable = false, length = 100)
 	private String nom;
 
-	//bi-directional many-to-one association to Livre
-	@OneToMany(mappedBy="categorie")
-	private List<Livre> livres;
-
+	
 
 	public Long getId() {
 		return this.id;
@@ -50,31 +45,10 @@ public class Categorie implements Serializable {
 		this.nom = nom;
 	}
 
-	public List<Livre> getLivres() {
-		return this.livres;
-	}
-
-	public void setLivres(List<Livre> livres) {
-		this.livres = livres;
-	}
-
-	public Livre addLivre(Livre livre) {
-		getLivres().add(livre);
-		livre.setCategorie(this);
-
-		return livre;
-	}
-
-	public Livre removeLivre(Livre livre) {
-		getLivres().remove(livre);
-		livre.setCategorie(null);
-
-		return livre;
-	}
-
+	
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, livres, nom);
+		return Objects.hash(id, nom);
 	}
 
 	@Override
@@ -86,12 +60,12 @@ public class Categorie implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Categorie other = (Categorie) obj;
-		return Objects.equals(id, other.id) && Objects.equals(livres, other.livres) && Objects.equals(nom, other.nom);
+		return Objects.equals(id, other.id)  && Objects.equals(nom, other.nom);
 	}
 
 	@Override
 	public String toString() {
-		return "Categorie [id=" + id + ", nom=" + nom + ", livres=" + livres + "]";
+		return "Categorie [id=" + id + ", nom=" + nom +  "]";
 	}
 
 }
