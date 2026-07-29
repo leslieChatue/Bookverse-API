@@ -2,6 +2,7 @@ package com.chatue.bookverse.bookverse_api.dto.request;
 
 import java.math.BigDecimal;
 
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
@@ -39,5 +40,6 @@ public class LivreRequest {
 	private Long auteurId;
 	@NotBlank(message = "Vous devez obligatoirement saisir une categorie!")
 	private Long categorieId;
+
 
 }

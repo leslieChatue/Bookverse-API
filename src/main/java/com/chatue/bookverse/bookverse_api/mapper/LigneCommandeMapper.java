@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import com.chatue.bookverse.bookverse_api.dto.LigneCommandeDTO;
-import com.chatue.bookverse.bookverse_api.entity.LignesCommandes;
+import com.chatue.bookverse.bookverse_api.entity.LigneCommande;
 
 @Mapper(componentModel = "spring" , uses= {LivreMapper.class})
 public interface LigneCommandeMapper {
@@ -17,13 +17,13 @@ public interface LigneCommandeMapper {
 	@Mapping(target="livreId" , source="livre.id")
 	@Mapping(target="titreLivre", source="livre.titre")
 	@Mapping(target = "sousTotal", expression = "java(calculSousTotal(ligneCommande))")
-	LigneCommandeDTO toDto(LignesCommandes ligneCommande);
+	LigneCommandeDTO toDto(LigneCommande ligneCommande);
 
-	    default BigDecimal calculSousTotal(LignesCommandes ligneCommande) {
+	    default BigDecimal calculSousTotal(LigneCommande ligneCommande) {
 	        return ligneCommande.getLivre()
 	                .getPrix()
 	                .multiply(BigDecimal.valueOf(ligneCommande.getQuantite()));
 	    }
 	//Methode qui transforme une liste
-	List<LigneCommandeDTO> toDtoList(List<LignesCommandes> ListLigneCommandes);
+	List<LigneCommandeDTO> toDtoList(List<LigneCommande> ListLigneCommandes);
 }

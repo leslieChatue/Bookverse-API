@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
-import java.util.Date;
 
 /**
  * The persistent class for the livre database table.
@@ -33,10 +33,10 @@ public class Livre implements Serializable {
 	private Long id;
 
 	@Column(name = "date_creation", nullable = false)
-	private Date dateCreation;
+	private LocalDateTime dateCreation;
 
 	@Column(name = "date_modification", nullable = false)
-	private Date dateModification;
+	private LocalDateTime dateModification;
 
 	@Column(length = 2147483647)
 	private String description;
@@ -62,6 +62,8 @@ public class Livre implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "categorie_id", nullable = false)
 	private Categorie categorie;
+	
+	
 
 
 }

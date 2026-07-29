@@ -1,6 +1,5 @@
 package com.chatue.bookverse.bookverse_api.dto;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -24,9 +23,9 @@ public class PanierResponseDTO {
     private Long userId;
 
 
-    private List<LignePanierDTO> lignes;
+    private List<LignePanierDTO> lignePanier;
 
 
-    private BigDecimal montantTotal;
+  //  private BigDecimal montantTotal;
 
 }

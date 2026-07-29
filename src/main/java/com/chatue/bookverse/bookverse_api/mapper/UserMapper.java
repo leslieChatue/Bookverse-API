@@ -4,17 +4,18 @@ import java.util.List;
 
 import org.mapstruct.Mapper;
 
-import com.chatue.bookverse.bookverse_api.dto.CategorieDto;
-import com.chatue.bookverse.bookverse_api.entity.Categorie;
+import com.chatue.bookverse.bookverse_api.dto.UserResponseDTO;
+import com.chatue.bookverse.bookverse_api.entity.User;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
 
 	//Méthode qui transforme une entité en DTO -> donc en passe en parametre l'entité et l'objet qu'on retourne est le DTO
-	CategorieDto toDto(Categorie categorie);
+	UserResponseDTO toDto(User user);
 	//Méthode qui transforme un DTO en entité -> donc en passe en parametre le dto et l'objet qu'on retourne est l'entité
-	Categorie toEntity(CategorieDto categorieResponse);
+	//User toEntity(UserResponseDTO userResponse);
 	//Methode qui transforme une liste
-	List<CategorieDto> toDtoList(List<Categorie> ListCategorie);
+	List<UserResponseDTO> toDtoList(List<User> ListUser);
+	User toEntity(UserResponseDTO byId);
 }

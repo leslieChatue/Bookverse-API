@@ -1,9 +1,5 @@
 package com.chatue.bookverse.bookverse_api.dto.request;
 
-
-
-import com.chatue.bookverse.bookverse_api.entity.ModePaiement;
-
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -24,19 +20,6 @@ public class PaiementRequest {
     private Long commandeId;
 
 	@NotBlank(message="Merci de bien vouloir saisir une valeur!")
-    private ModePaiement modePaiement;
+    private String modePaiement;
 
 }
-/*
-dto
-
-│
-├── commande
-│   ├── CommandeRequestDTO.java
-│   ├
-│   ├── ModifierStatutCommandeDTO.java
-│   ├── 
-│
-
-
-*/

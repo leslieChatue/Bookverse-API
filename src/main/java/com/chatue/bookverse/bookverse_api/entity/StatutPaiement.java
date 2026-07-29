@@ -5,5 +5,7 @@ public enum StatutPaiement {
 
 	VALIDE,
 
-	REFUSE
+	REFUSE,
+	
+	REMBOURSE
 }

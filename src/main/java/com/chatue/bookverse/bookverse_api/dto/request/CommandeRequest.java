@@ -15,6 +15,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommandeRequest {
+	
 	@NotBlank(message="Merci de bien vouloir saisir une valeur!")
 	 private Long panierId;
 }

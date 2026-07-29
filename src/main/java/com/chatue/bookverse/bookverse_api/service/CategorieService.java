@@ -3,7 +3,7 @@ package com.chatue.bookverse.bookverse_api.service;
 import java.util.List;
 
 import com.chatue.bookverse.bookverse_api.dto.CategorieDto;
-import com.chatue.bookverse.bookverse_api.entity.Categorie;
+import com.chatue.bookverse.bookverse_api.dto.request.CategorieRequest;
 
 public interface CategorieService {
 
@@ -17,5 +17,5 @@ public interface CategorieService {
 
 	int dltCategorieById(Long id);
 
-	void savedCategorie(Categorie cat);
+	void savedCategorie(CategorieRequest categorie);
 }

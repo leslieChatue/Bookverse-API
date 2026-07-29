@@ -3,18 +3,19 @@ package com.chatue.bookverse.bookverse_api.mapper;
 import java.util.List;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-import com.chatue.bookverse.bookverse_api.dto.CategorieDto;
-import com.chatue.bookverse.bookverse_api.entity.Categorie;
+import com.chatue.bookverse.bookverse_api.dto.PaiementResponseDTO;
+import com.chatue.bookverse.bookverse_api.entity.Paiement;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring" , uses= {CommandeMapper.class})
 public interface PaiementMapper {
 
 
 	//Méthode qui transforme une entité en DTO -> donc en passe en parametre l'entité et l'objet qu'on retourne est le DTO
-	CategorieDto toDto(Categorie categorie);
-	//Méthode qui transforme un DTO en entité -> donc en passe en parametre le dto et l'objet qu'on retourne est l'entité
-	Categorie toEntity(CategorieDto categorieResponse);
+	@Mapping(target="commandeId" , source="commande.id")
+	PaiementResponseDTO toDto(Paiement paiement);
+	
 	//Methode qui transforme une liste
-	List<CategorieDto> toDtoList(List<Categorie> ListCategorie);
+	List<PaiementResponseDTO> toDtoList(List<Paiement> ListPaiement);
 }
