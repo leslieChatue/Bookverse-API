@@ -3,6 +3,8 @@ package com.chatue.bookverse.bookverse_api.entity;
 import java.io.Serializable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.Entity;
 import java.util.Objects;
@@ -13,8 +15,10 @@ import java.util.Objects;
  */
 
 @Table(name = "categorie")
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
 public class Categorie implements Serializable {
 	private static final long serialVersionUID = 1L;

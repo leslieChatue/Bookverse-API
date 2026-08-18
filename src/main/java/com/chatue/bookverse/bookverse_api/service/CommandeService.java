@@ -5,11 +5,8 @@ import java.util.List;
 import com.chatue.bookverse.bookverse_api.dto.CommandeResponseDTO;
 import com.chatue.bookverse.bookverse_api.dto.DetailCommandeResponseDTO;
 import com.chatue.bookverse.bookverse_api.dto.request.PaiementRequest;
+import com.chatue.bookverse.bookverse_api.dto.request.UpdateCommandRequest;
 import com.chatue.bookverse.bookverse_api.entity.StatutCommande;
-
-import jakarta.validation.Valid;
-
-
 
 
 public interface CommandeService {
@@ -24,15 +21,15 @@ public interface CommandeService {
 
 	void deleteCommande(Long id);
 
-	void updateStatut(Long id,String statut);
+	CommandeResponseDTO updateStatut(Long id,UpdateCommandRequest updateCommandRequest);
 
-	void saveCommande(Long panierId ,PaiementRequest paiementRequest);
+	CommandeResponseDTO saveCommande(Long panierId ,PaiementRequest paiementRequest);
 
 	List<CommandeResponseDTO> getAllCommandes();
 	
-	List<CommandeResponseDTO> getAllCommandesByUser(Long userId);
+	List<CommandeResponseDTO> getAllCommandesByUserId(Long userId);
 
-	CommandeResponseDTO getCommandeById(@Valid Long id);
+	CommandeResponseDTO getCommandeById(Long id);
 	
-	//boolean existsByNumeroCommande(String numero);
+	boolean existsByPanierUserId(Long userId);
 }

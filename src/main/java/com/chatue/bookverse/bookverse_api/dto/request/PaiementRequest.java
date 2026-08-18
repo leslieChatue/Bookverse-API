@@ -21,5 +21,7 @@ public class PaiementRequest {
 
 	@NotBlank(message="Merci de bien vouloir saisir une valeur!")
     private String modePaiement;
+	
+	
 
 }

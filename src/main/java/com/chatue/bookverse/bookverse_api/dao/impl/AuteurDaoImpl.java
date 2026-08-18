@@ -2,6 +2,7 @@ package com.chatue.bookverse.bookverse_api.dao.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 import jakarta.persistence.criteria.Predicate;
@@ -38,14 +39,14 @@ public class AuteurDaoImpl implements AuteurDao{
 	}
 
 	@Override
-	public Auteur findAuteurById(Long id) {
+	public Optional<Auteur> findAuteurById(Long id) {
 	try {
 		CriteriaBuilder cb= entityManager.getCriteriaBuilder();
 		CriteriaQuery<Auteur> cq =cb.createQuery(Auteur.class);
 		Root<Auteur> root = cq.from(Auteur.class);
 		Predicate predicates = cb.equal(root.get("id"), id);
 		cq.select(root).where(predicates);
-		return entityManager.createQuery(cq).getSingleResult();
+		return Optional.of(entityManager.createQuery(cq).getSingleResult());
 	}catch (NoResultException e) {
 		throw new RessourceNotFoundException("Auteur introuvable avec l'id :"+id);
 	}
@@ -67,7 +68,7 @@ public class AuteurDaoImpl implements AuteurDao{
 	}
 
 	@Override
-	public Auteur findAuteurByNomPrenom(String nom, String prenom) {
+	public Optional<Auteur> findAuteurByNomPrenom(String nom, String prenom) {
 		try {
 	    CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 	    CriteriaQuery<Auteur> query = cb.createQuery(Auteur.class);
@@ -79,7 +80,7 @@ public class AuteurDaoImpl implements AuteurDao{
 	    if(prenom != null && !prenom.isEmpty())
 	        conditions.add(cb.like(root.get("prenom"), prenom));
 	    query.select(root).where(conditions.toArray(new Predicate[0]));
-	    return entityManager.createQuery(query).getSingleResult();
+	    return Optional.of(entityManager.createQuery(query).getSingleResult());
 		}catch (NoResultException e) {
 			throw new RessourceNotFoundException("Auteur introuvable avec le couple nom :"+nom +" et le prénom :"+prenom);
 		}
@@ -87,8 +88,17 @@ public class AuteurDaoImpl implements AuteurDao{
 
 	@Override
 	public void savedAuteur(Auteur auteur) {
-		entityManager.persist(auteur);
-		
+		entityManager.persist(auteur);		
+	}
+
+	@Override
+	public void deleteAuteur(Long id) {
+		entityManager.remove(findAuteurById(id));
+	}
+
+	@Override
+	public boolean existsAuteurByNomPrenom(String nom, String prenom) {
+		return findAuteurByNomPrenom(nom, prenom).isPresent();	
 	}
 
 }

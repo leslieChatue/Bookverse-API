@@ -9,7 +9,6 @@ import com.chatue.bookverse.bookverse_api.dao.CategorieDao;
 import com.chatue.bookverse.bookverse_api.dto.CategorieDto;
 import com.chatue.bookverse.bookverse_api.dto.request.CategorieRequest;
 import com.chatue.bookverse.bookverse_api.entity.Categorie;
-import com.chatue.bookverse.bookverse_api.exception.NullRessourceException;
 import com.chatue.bookverse.bookverse_api.exception.RessourceExistException;
 import com.chatue.bookverse.bookverse_api.exception.RessourceNotFoundException;
 import com.chatue.bookverse.bookverse_api.mapper.CategorieMapper;
@@ -29,79 +28,62 @@ public class CategorieServiceImpl implements CategorieService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<CategorieDto> getAllCategories() {
-		List<Categorie> listeCategorie = categorieDao.findAllCategories();
-		if (listeCategorie.isEmpty()) {
-			throw new NullRessourceException("Aucune categorie présentte dans la base de donnée");
-
-		}
-		return categorieMapper.toDtoList(listeCategorie);
+		return categorieMapper.toDtoList(categorieDao.findAllCategories());
 
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public CategorieDto getCategorieById(Long id) {
-		Categorie categorie = categorieDao.findCategorieById(id);
-		if (categorie == null) {
-			throw new RessourceNotFoundException("Aucune catégorie trouvée avec l'id : " + id);
-		}
-		return categorieMapper.toDto(categorie);
-
-	}
+			return	categorieMapper.toDto(categorieDao.findCategorieById(id).orElseThrow(()->new RessourceNotFoundException("Aucune catégorie trouvée avec l'id: " + id)));
+}
 	
 	@Override
 	@Transactional(readOnly = true)
 	public CategorieDto getCategorieByNom(String nom) {
-		Categorie categorie = categorieDao.findCategorieByNom(nom);
-		if (categorie == null) {
-			throw new RessourceNotFoundException("Aucune catégorie trouvée avec l'id : " + nom);
-		}
+	return	categorieMapper.toDto(categorieDao.findCategorieByNom(nom).orElseThrow(()->new RessourceNotFoundException("Aucune catégorie trouvée avec le nom : " + nom)));
+	}
+
+	@Override
+	@Transactional
+	public CategorieDto updtCategorieByNom( Long id,CategorieRequest categorieRequest ) {
+		// 1-> Je vérifie d'abord que la catégorie existe en base
+		Categorie categorie = categorieDao.findCategorieById(id).orElseThrow(()->new RessourceNotFoundException("Aucune catégorie trouvée avec l'id : " + id));
+		//2-> Je modifie son nom
+		categorie.setNom(categorieRequest.getNom());
+		//3-> J'enregistre les changements dans la base
+		categorieDao.save(categorie);
+		//4-> Je convertis en dto et je retourne l'objet dtto
 		return categorieMapper.toDto(categorie);
-
+			
 	}
 
 	@Override
 	@Transactional
-	public int updtCategorieByNom(String nouveauNom, Long id) {
-		int nbreCategorieModifiee = 0;
-		// 1-> Je vérifie d'abord que la catégorie existe en base
-		Categorie categorie = categorieDao.findCategorieById(id);
-		if (categorie == null) {
-			throw new RessourceNotFoundException("Aucune catégorie trouvée avec l'id : " + id);
-		} else {
-			nbreCategorieModifiee = categorieDao.updateCategorieByNom(nouveauNom, id);
-			}
-		return nbreCategorieModifiee;
+	public void dltCategorieById(Long id) {		
+		Categorie categorie = categorieDao.findCategorieById(id).orElseThrow(()->new RessourceNotFoundException("Aucune catégorie trouvée avec l'id : " + id));
+		categorieDao.deleteCategorieById(categorie.getId());		
 	}
 
 	@Override
 	@Transactional
-	public int dltCategorieById(Long id) {		
-		int nbreCategorieModifiee = 0;
-		// 1-> Je vérifie d'abord que la catégorie existe en base
-		Categorie categorie = categorieDao.findCategorieById(id);
-		if (categorie == null) {
-			throw new RessourceNotFoundException("Aucune catégorie trouvée avec l'id : " + id);
-		} else {
-			nbreCategorieModifiee =categorieDao.deleteCategorieById(id);
-		}
-		return nbreCategorieModifiee;
-		
-	}
-
-	@Override
-	@Transactional
-	public void savedCategorie(CategorieRequest cat) {
+	public CategorieDto savedCategorie(CategorieRequest categorieRequest) {
 		//1-> Je verifie si une categorie de ce genre n'existe pas déjà en base 
-		Categorie categorieTrouve = categorieDao.findCategorieByNom(cat.getNom());
-		if(categorieTrouve!=null && categorieTrouve.equals(categorieTrouve)) {
-			throw new RessourceExistException("Impossible d'enregistrer cette catégorie car elle existe déjà : nom saisi= "+cat.getNom());
+		if(existsCategorie(categorieRequest)) {
+			throw new RessourceExistException("Impossible d'enregistrer cette catégorie car elle existe déjà : nom saisi= "+categorieRequest.getNom());
 		}else {
-			Categorie cat1= new Categorie();
-			cat1.setNom(cat.getNom());
-			categorieDao.save(cat1);
+			Categorie categorie= new Categorie();
+			categorie.setNom(categorieRequest.getNom());
+			categorieDao.save(categorie);
+			return categorieMapper.toDto(categorie);
 		}
 		
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public boolean existsCategorie(CategorieRequest categorieRequest) {
+		return categorieDao.findCategorieByNom(categorieRequest.getNom()).isPresent();
 	}
 
 }

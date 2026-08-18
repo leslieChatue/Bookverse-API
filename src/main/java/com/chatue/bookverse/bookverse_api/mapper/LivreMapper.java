@@ -23,10 +23,19 @@ public interface LivreMapper {
 		@Mapping(target = "nomCategorie", expression = "java(livre.getCategorie() != null ? livre.getCategorie().getNom() : null)")   
 		LivreResumeDto toDtoResume(Livre livre);
 		//Methode qui transforme une liste
-		List<LivreCompletDto> toDtoListComplet(List<Livre> ListLivre);
+		List<LivreCompletDto> toDtoListComplet(List<Livre> listLivre);
 
 		@Mapping(target = "nomAuteur", expression = "java(livre.getAuteur() != null ? livre.getAuteur().getNom() : null)")
 		@Mapping(target = "nomCategorie", expression = "java(livre.getCategorie() != null ? livre.getCategorie().getNom() : null)")
-		List<LivreResumeDto> toDtoListResume(List<Livre> ListLivre);
+		List<LivreResumeDto> toDtoListResume(List<Livre> listLivre);
+		
+		default Livre toEntityLong(Long livreId) {
+			if(livreId==null) return null;
+			else {
+				Livre livre= new Livre();
+				livre.setId(livreId);
+				return livre;
+			}
+		}
 
 }

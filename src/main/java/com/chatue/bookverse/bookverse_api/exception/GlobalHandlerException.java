@@ -1,9 +1,12 @@
 package com.chatue.bookverse.bookverse_api.exception;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -50,5 +53,14 @@ public class GlobalHandlerException {
 		return new ResponseEntity<ErrorResponse>(err , HttpStatus.INTERNAL_SERVER_ERROR);
 		
 	}
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<ErrorResponse> handleValidationExeption(MethodArgumentNotValidException exception,HttpServletRequest request , NullRessourceException ex){
+	
+		ErrorResponse err= new ErrorResponse(ex.getMessage(), HttpStatus.ACCEPTED.value(), LocalDateTime.now(), request.getRequestURI());
+		
+		return new ResponseEntity<>(err , HttpStatus.ACCEPTED);
+		
+	}
 
+	
 }

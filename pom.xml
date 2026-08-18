@@ -12,7 +12,7 @@
 	<groupId>com.leslie.Bookverse</groupId>
 	<artifactId>bookverse-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<name>bookverse-api</name>
 	<description>Plateforme complète de librairie en ligne</description>
 	<url />
@@ -66,7 +66,7 @@
 			<version>2.8.3</version>
 		</dependency>
 		<!-- Spring Security -->
-	  <dependency>
+	 <dependency>
 			    <groupId>org.springframework.boot</groupId>
 			    <artifactId>spring-boot-starter-security</artifactId>
 			    <scope>compile</scope>
@@ -107,19 +107,12 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- Tomcat (pour packaging war) -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-tomcat</artifactId>
-			<scope>provided</scope>
-		</dependency>
 		<!-- Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 		<!-- Mock-->
 		<!-- Source:
 		https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter -->

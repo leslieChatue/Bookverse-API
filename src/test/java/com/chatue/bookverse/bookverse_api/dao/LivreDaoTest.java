@@ -2,15 +2,16 @@ package com.chatue.bookverse.bookverse_api.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
+import com.chatue.bookverse.bookverse_api.entity.Categorie;
 import com.chatue.bookverse.bookverse_api.entity.Livre;
-import com.chatue.bookverse.bookverse_api.exception.NullRessourceException;
 
 @DataJpaTest
 public class LivreDaoTest {
@@ -21,7 +22,7 @@ public class LivreDaoTest {
 	@BeforeEach
 	public void  initialiser_livres() {
 		Livre livre = new Livre();
-		livre.setDateCreation(new Date());
+		livre.setDateCreation(LocalDateTime.now());
 		livre.setDescription("Livre fictif");
 		livre.setId(1L);
 		livre.setTitre("Titre fictif");
@@ -37,9 +38,13 @@ public class LivreDaoTest {
 	@Test
 	@DisplayName("Enregistrer un livre")
 	public void enregistrerLivre() {
-		Livre livre1 = new Livre();
-		livre1 = livreDao.findById(1L).orElseThrow(()-> new NullRessourceException("Aucune ressource trouvée"));
-		assertEquals(1, livreDao.findAll().size());
+		Livre livre = new Livre();
+		livre.setDescription("Livre d'amour");
+		livre.setCategorie(new Categorie(1L,"romance"));
+		livreDao.save(livre);
+		int tailleExpected=1;
+		int result =livreDao.findAll().size();
+		assertEquals(tailleExpected , result);
 	}
 	
 	

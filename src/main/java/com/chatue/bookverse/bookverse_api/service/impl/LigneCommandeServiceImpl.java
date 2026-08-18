@@ -22,7 +22,7 @@ public class LigneCommandeServiceImpl implements LigneCommandeService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<LigneCommandeDTO> getLigneCommandeByIdCommande(Long commandeId) {
-		return ligneCommandeMapper.toDtoList(ligneCommandeDao.findLigneCommandeByIdCommande(commandeId));
+		return ligneCommandeMapper.toDtoList(ligneCommandeDao.findByCommandeId(commandeId));
 	}
 
 }

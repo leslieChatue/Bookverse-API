@@ -9,9 +9,7 @@ import org.springframework.data.domain.Pageable;
 import com.chatue.bookverse.bookverse_api.dto.LivreCompletDto;
 import com.chatue.bookverse.bookverse_api.dto.LivreResumeDto;
 import com.chatue.bookverse.bookverse_api.dto.request.LivreRequest;
-
-
-
+import com.chatue.bookverse.bookverse_api.dto.request.UpdateStockLivreRequest;
 
 public interface LivreService {
 
@@ -25,11 +23,11 @@ public interface LivreService {
 	
 	List<LivreResumeDto> getLivreByCategorieContaining(String nomCategorie);
 	
-	void savedLivre(LivreRequest livreRequest);
+	LivreResumeDto savedLivre(LivreRequest livreRequest);
 	
-	void updateLivre(Long id , LivreRequest livreRequest);
+	LivreResumeDto updateLivre(Long id , LivreRequest livreRequest);
 	
-	int deleteLivre(Long id);
+	void deleteLivre(Long id);
 	
 	List<LivreResumeDto> getLivreByAuteurId(Long auteurId);
 	
@@ -38,7 +36,9 @@ public interface LivreService {
 	Page<LivreCompletDto> getAllLivresByStockAndByPrix(BigDecimal minPrix, BigDecimal maxPrix, Boolean stockDisponible,
 			Pageable pageable);
 
-	void updateStockLivre(Long id,  Integer stock);
+	LivreResumeDto updateStockLivre(Long id,  UpdateStockLivreRequest stock);
+	
+	boolean existsLivre(LivreRequest livreRequest);
 
 	
 }

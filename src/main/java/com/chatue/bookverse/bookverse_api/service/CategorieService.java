@@ -13,9 +13,11 @@ public interface CategorieService {
 	
 	CategorieDto getCategorieByNom(String nom);
 	
-	int updtCategorieByNom(String nouveauNom , Long id);
+	CategorieDto updtCategorieByNom(Long id,CategorieRequest categorieRequest);
 
-	int dltCategorieById(Long id);
+	void dltCategorieById(Long id);
 
-	void savedCategorie(CategorieRequest categorie);
+	CategorieDto savedCategorie(CategorieRequest categorie);
+	
+	boolean existsCategorie(CategorieRequest categorie);
 }

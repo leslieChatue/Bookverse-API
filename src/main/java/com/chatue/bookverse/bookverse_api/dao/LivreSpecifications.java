@@ -7,6 +7,10 @@ import org.springframework.data.jpa.domain.Specification;
 import com.chatue.bookverse.bookverse_api.entity.Livre;
 
 public class LivreSpecifications {
+	
+ private LivreSpecifications() {
+   /* This utility class should not be instantiated */
+ }
 
 	public static Specification<Livre> prixEntre(BigDecimal minPrix, BigDecimal maxPrix){
 		

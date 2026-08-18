@@ -16,6 +16,7 @@ import lombok.ToString;
 public class UserResponseDTO {
 
 	private Long id;
+	private Long roleId;
 	private String username;
 	private String email;
 }

@@ -16,6 +16,7 @@ import com.chatue.bookverse.bookverse_api.dao.LivreSpecifications;
 import com.chatue.bookverse.bookverse_api.dto.LivreCompletDto;
 import com.chatue.bookverse.bookverse_api.dto.LivreResumeDto;
 import com.chatue.bookverse.bookverse_api.dto.request.LivreRequest;
+import com.chatue.bookverse.bookverse_api.dto.request.UpdateStockLivreRequest;
 import com.chatue.bookverse.bookverse_api.entity.Categorie;
 import com.chatue.bookverse.bookverse_api.entity.Livre;
 import com.chatue.bookverse.bookverse_api.exception.NullRessourceException;
@@ -36,6 +37,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class LivreServiceImpl implements LivreService {
 
+	private static final  String LIVRE_NOT_FOUND ="Aucun livre trouvé avec cet id: ";
+	private static final  String CATEGORIE_NOT_FOUND ="Aucune categorie trouvée avec ce nom: ";
+
 	private final LivreDao livreDao;
 	private final CategorieDao categorieDao;
 	private final CategorieService categorieService;
@@ -48,32 +52,20 @@ public class LivreServiceImpl implements LivreService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<LivreCompletDto> getAllLivres() {
-
-		List<Livre> listeLivres = livreDao.findAll();
-		if (listeLivres.isEmpty()) {
-			throw new NullRessourceException("Aucun livre présent en base :LISTE_VIDE");
-		}
-		return livreMapper.toDtoListComplet(listeLivres);
+	public List<LivreCompletDto> getAllLivres() {	
+		return livreMapper.toDtoListComplet(livreDao.findAll());
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<LivreResumeDto> getAllLivresByTitreContaining(String titre) {
-
-		List<Livre> listeLivres = livreDao.findAllLivresByTitreContainingIgnoreCase(titre);
-		if (listeLivres.isEmpty()) {
-			throw new NullRessourceException("Aucun livre présent en base avec pour titre :" + titre);
-		}
-		return livreMapper.toDtoListResume(listeLivres);
+		return livreMapper.toDtoListResume(livreDao.findByTitreContainingIgnoreCase(titre));
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public LivreCompletDto getLivreById(Long id) {
-
-		Livre livre = livreDao.findById(id).orElseThrow(() -> new RessourceNotFoundException("Aucun livre trouvée avec l'id : " + id));
-		
+		Livre livre = livreDao.findById(id).orElseThrow(() -> new RessourceNotFoundException(LIVRE_NOT_FOUND + id));
 		return livreMapper.toDto(livre);
 	}
 
@@ -81,24 +73,16 @@ public class LivreServiceImpl implements LivreService {
 	@Transactional(readOnly = true)
 	public List<LivreResumeDto> getLivreByCategorieContaining(String nomCategorie) {
 		// 1-> Je vérifie d'abord que la catégorie existe en base
-		Categorie categorie = categorieDao.findCategorieByNom(nomCategorie);
-		if (categorie == null) {
-			throw new RessourceNotFoundException("Aucune catégorie trouvée avec l'id : " + nomCategorie);
-		} else {
-			List<Livre> listeLivres = livreDao.findByCategorieNomStartingWith(nomCategorie);
-
-			if (listeLivres.isEmpty()) {
-				throw new NullRessourceException("Aucun livre présent en base avec pour titre :" + nomCategorie);
-			}
+		Categorie categorie = categorieDao.findCategorieByNom(nomCategorie).orElseThrow(() -> new RessourceNotFoundException(CATEGORIE_NOT_FOUND + nomCategorie));;
+			List<Livre> listeLivres = livreDao.findByCategorieNomStartingWith(categorie.getNom());
 			return livreMapper.toDtoListResume(listeLivres);
-
-		}
 	}
 
 	@Override
 	@Transactional
-	public void savedLivre(LivreRequest livreRequest){
-			
+	public LivreResumeDto savedLivre(LivreRequest livreRequest){
+		//1-> Je vérifie que le livre n'existe pas déjà
+		
 		Livre livre = new Livre();
 		LocalDateTime now = LocalDateTime.now();
 		livre.setAuteur(auteurMapper.toEntity(auteurService.getAuteurById(livreRequest.getAuteurId())));
@@ -110,14 +94,14 @@ public class LivreServiceImpl implements LivreService {
 		livre.setStock(livreRequest.getStock());
 		livre.setTitre(livreRequest.getTitre());
 		livreDao.save(livre);
+		return livreMapper.toDtoResume(livre);
 	}
 
 	@Override
 	@Transactional
-	public void updateLivre(Long id ,LivreRequest livreRequest){
+	public LivreResumeDto updateLivre(Long id ,LivreRequest livreRequest){
 			
-		Livre livre = livreDao.findById(id).orElseThrow(() -> new RessourceNotFoundException("Aucun livre trouvée avec l'id : " + id));
-		if(livre!=null) {
+		Livre livre = livreDao.findById(id).orElseThrow(() -> new RessourceNotFoundException(LIVRE_NOT_FOUND + id));
 		LocalDateTime now = LocalDateTime.now();
 		livre.setAuteur(auteurMapper.toEntity(auteurService.getAuteurById(livreRequest.getAuteurId())));
 		livre.setCategorie(categorieMapper.toEntity(categorieService.getCategorieById(livreRequest.getCategorieId())));
@@ -128,7 +112,8 @@ public class LivreServiceImpl implements LivreService {
 		livre.setStock(livreRequest.getStock());
 		livre.setTitre(livreRequest.getTitre());
 		livreDao.save(livre);
-		}
+		return livreMapper.toDtoResume(livre);
+		
 	}
 
 	@Override
@@ -145,23 +130,21 @@ public class LivreServiceImpl implements LivreService {
 
 	
 	@Override
-	public int deleteLivre(Long id) {
-		int cpt =0;
-		Livre livre= livreDao.findById(id).orElseThrow(() -> new NullRessourceException("Aucun livre présent en base "));
-		if(livre != null && livreDao.existsById(livre.getId())) {
+	@Transactional
+	public void deleteLivre(Long id) {
+	
+		Livre livre= livreDao.findById(id).orElseThrow(() -> new NullRessourceException(LIVRE_NOT_FOUND +" "+id));
+		if(livreDao.existsById(livre.getId())) {
 			livreDao.delete(livre);
-			cpt++;
 		}
-		return cpt;
+
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
+	@Transactional(readOnly = true)
 	public Page<LivreCompletDto> getAllLivresPageable(Pageable pageable) {
 		Page<Livre> listeLivres = livreDao.findAll(pageable);
-		if (listeLivres.isEmpty()) {
-			throw new NullRessourceException("Aucun livre présent en base :LISTE_VIDE");
-		}
 		return (Page<LivreCompletDto>) livreMapper.toDtoListComplet((List<Livre>) listeLivres);
 	}
 	
@@ -177,13 +160,18 @@ public class LivreServiceImpl implements LivreService {
 	}
 
 	@Override
-	public void updateStockLivre(Long id, Integer stock) {
-		Livre livre = livreDao.findById(id).orElseThrow(() -> new RessourceNotFoundException("Aucun livre trouvée avec l'id : " + id));
-		if(livre!=null) {
-			livre.setStock(stock);
+	@Transactional
+	public LivreResumeDto updateStockLivre(Long id,UpdateStockLivreRequest stock) {
+			Livre livre = livreDao.findById(id).orElseThrow(() -> new RessourceNotFoundException("Aucun livre trouvée avec l'id : " + id));
+			livre.setStock(stock.stock());
 			livreDao.save(livre);
-		}
-		
+			return livreMapper.toDtoResume(livre);	
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public boolean existsLivre(LivreRequest livreRequest) {
+		return livreDao.existsByIsbn(livreRequest.getIsbn());
 	}
 
 }

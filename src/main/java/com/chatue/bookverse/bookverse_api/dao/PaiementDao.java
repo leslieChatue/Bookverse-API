@@ -12,5 +12,5 @@ import com.chatue.bookverse.bookverse_api.entity.StatutPaiement;
 public interface PaiementDao extends JpaRepository<Paiement, Long> {
 	Optional<Paiement> findByCommandeId(Long commandeId);
 	
-	List<Paiement> findByStatut(StatutPaiement statut);
+	List<Paiement> findByStatutPaiement(StatutPaiement statut);
 }

@@ -14,9 +14,13 @@ public interface UserService {
 
 	List<UserResponseDTO> getByNomContainingIgnoreCase(String nom);
 
-
+	List<UserResponseDTO> getAllUsers();
+	
 	UserResponseDTO getById(Long id);
 
 
 	void saveUser(UserRequest userRequest);
+
+
+	UserResponseDTO updateUserByUsername(Long id , String username);
 }

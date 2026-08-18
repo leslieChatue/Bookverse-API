@@ -3,11 +3,9 @@ package com.chatue.bookverse.bookverse_api.entity;
 import java.io.Serializable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -18,12 +16,10 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "livre")
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-@EqualsAndHashCode
-@ToString
+@Builder
 public class Livre implements Serializable {
 	private static final long serialVersionUID = 1L;
 

@@ -8,11 +8,11 @@ import com.chatue.bookverse.bookverse_api.dto.request.PanierRequest;
 public interface PanierService {
 
 	PanierResponseDTO getUtilisateurById(Long utilisateurId);
-	void  savePanier(Long userId);
+	PanierResponseDTO  savePanier(Long userId);
 	PanierResponseDTO  saveLivreInPanier(PanierRequest panier);
 	PanierResponseDTO  getPanierById( Long id);
 	void deleteLivrePanier(Long id, Long livreId);
-	void updateQuantite(PanierModifierQuantite panierModifierquantite);
+	PanierResponseDTO updateQuantite(PanierModifierQuantite panierModifierquantite);
 	void viderPanier(Long id);
 	
 }

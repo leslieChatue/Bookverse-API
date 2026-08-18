@@ -4,8 +4,9 @@ import java.util.List;
 
 import com.chatue.bookverse.bookverse_api.dto.AuteurDto;
 import com.chatue.bookverse.bookverse_api.dto.LivreCompletDto;
+import com.chatue.bookverse.bookverse_api.dto.request.AuteurLivreRequest;
 import com.chatue.bookverse.bookverse_api.dto.request.AuteurRequest;
-import com.chatue.bookverse.bookverse_api.entity.Auteur;
+
 
 
 
@@ -17,11 +18,11 @@ public interface AuteurService {
 	
 	AuteurDto getAuteurByNomPrenom(String nom , String prenom );
 	
-	List<LivreCompletDto> getLivresByAuteur(Auteur auteur);
+	List<LivreCompletDto> getLivresByAuteur(AuteurLivreRequest auteur);
 	
-	void savedAuteur(AuteurRequest auteur);
+	AuteurDto savedAuteur(AuteurRequest auteur);
 	
-	void updateAuteur(Long id,AuteurRequest auteur);
+	AuteurDto updateAuteur(Long id,AuteurRequest auteur);
 	
-	int deleteAuteur(Long id);
+	void deleteAuteur(Long id);
 }

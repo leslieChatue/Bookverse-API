@@ -18,4 +18,7 @@ public interface PaiementMapper {
 	
 	//Methode qui transforme une liste
 	List<PaiementResponseDTO> toDtoList(List<Paiement> ListPaiement);
+	
+	@Mapping(target="commande" , source="commandeId")
+	Paiement ToEntity(PaiementResponseDTO paiementResponseDTO);
 }

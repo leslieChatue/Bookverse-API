@@ -11,16 +11,5 @@ public record PanierModifierQuantite(Long id,Long livreId,int quantite) {
 
 	}
 
-	public Long id() {
-		return id;
-	}
-
-	public Long livreId() {
-		return livreId;
-	}
-
-	public int quantite() {
-		return quantite;
-	}
 	
 }

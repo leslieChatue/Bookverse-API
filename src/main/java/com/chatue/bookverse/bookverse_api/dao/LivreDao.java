@@ -11,10 +11,8 @@ import com.chatue.bookverse.bookverse_api.entity.Livre;
 public interface LivreDao extends JpaRepository<Livre, Long> , JpaSpecificationExecutor<Livre> {
 
 	//Implémentation de méthodes natives de Spring Data
-	
-	List<Livre> findAll();
-	
-	List<Livre> findAllLivresByTitreContainingIgnoreCase(String titre);
+		
+	List<Livre> findByTitreContainingIgnoreCase(String titre);
 		
 	List<Livre> findByCategorieNomStartingWith(String nomCategorie);
 	
@@ -24,5 +22,5 @@ public interface LivreDao extends JpaRepository<Livre, Long> , JpaSpecificationE
 	
 	List<Livre> findByCategorieId(Long categorieId);
 	
-
+	
 }

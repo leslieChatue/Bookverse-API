@@ -1,5 +1,6 @@
 package com.chatue.bookverse.bookverse_api.dto;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -25,6 +26,7 @@ public class PanierResponseDTO {
 
     private List<LignePanierDTO> lignePanier;
 
+    private LocalDate dateCreation;
 
   //  private BigDecimal montantTotal;
 

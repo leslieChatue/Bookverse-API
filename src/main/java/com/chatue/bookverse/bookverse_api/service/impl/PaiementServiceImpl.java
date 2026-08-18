@@ -6,16 +6,15 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.chatue.bookverse.bookverse_api.dao.CommandeDao;
 import com.chatue.bookverse.bookverse_api.dao.PaiementDao;
 import com.chatue.bookverse.bookverse_api.dto.PaiementResponseDTO;
 import com.chatue.bookverse.bookverse_api.dto.request.PaiementRequest;
+import com.chatue.bookverse.bookverse_api.dto.request.PaiementStatutRequest;
 import com.chatue.bookverse.bookverse_api.entity.ModePaiement;
-import com.chatue.bookverse.bookverse_api.entity.Paiement;
 import com.chatue.bookverse.bookverse_api.entity.StatutPaiement;
 import com.chatue.bookverse.bookverse_api.exception.RessourceNotFoundException;
-import com.chatue.bookverse.bookverse_api.mapper.CommandeMapper;
 import com.chatue.bookverse.bookverse_api.mapper.PaiementMapper;
-import com.chatue.bookverse.bookverse_api.service.CommandeService;
 import com.chatue.bookverse.bookverse_api.service.PaiementService;
 
 import lombok.RequiredArgsConstructor;
@@ -24,9 +23,9 @@ import lombok.RequiredArgsConstructor;
 public class PaiementServiceImpl implements PaiementService {
 
 	private final PaiementDao paiementDao;
+	private final CommandeDao commandeDao;
 	private final PaiementMapper paiementMapper;
-	private final CommandeMapper commandeMapper;
-	private final CommandeService commandeService;
+	
 	
 	@Override
 	@Transactional(readOnly = true)
@@ -36,8 +35,8 @@ public class PaiementServiceImpl implements PaiementService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<PaiementResponseDTO> getByStatut(StatutPaiement statut) {
-		return paiementMapper.toDtoList(paiementDao.findByStatut(statut));
+	public List<PaiementResponseDTO> getByStatut(PaiementStatutRequest paiementStatutRequest) {
+		return paiementMapper.toDtoList(paiementDao.findByStatutPaiement(paiementStatutRequest.statutPaiement()));
 	}
 
 	@Override
@@ -48,14 +47,15 @@ public class PaiementServiceImpl implements PaiementService {
 
 	@Override
 	@Transactional
-	public void savePaiement(PaiementRequest paiementRequest) {
-		Paiement paiement= new Paiement();
-		paiement.setCommande(commandeMapper.toEntity(commandeService.getCommandeById(paiementRequest.getCommandeId())));
-		paiement.setDatePaiement(LocalDateTime.now());
-		paiement.setModePaiement(ModePaiement.valueOf(paiementRequest.getModePaiement()));
-		paiement.setStatutPaiement(StatutPaiement.VALIDE);
-		paiement.setMontant(commandeMapper.toEntity(commandeService.getCommandeById(paiementRequest.getCommandeId())).getMontantTotal());
-		paiementDao.save(paiement);
+	public PaiementResponseDTO savePaiement(PaiementRequest paiementRequest) {
+		PaiementResponseDTO paiementResponseDTO = new PaiementResponseDTO();
+		paiementResponseDTO.setCommandeId(paiementRequest.getCommandeId());
+		paiementResponseDTO.setDatePaiement(LocalDateTime.now());
+		paiementResponseDTO.setModePaiement(ModePaiement.valueOf(paiementRequest.getModePaiement()));
+		paiementResponseDTO.setStatutPaiement(StatutPaiement.VALIDE);
+		paiementResponseDTO.setMontant((commandeDao.findById(paiementRequest.getCommandeId())).get().getMontantTotal());
+		paiementDao.save(paiementMapper.ToEntity(paiementResponseDTO));
+		return paiementResponseDTO;
 	}
 
 	@Override

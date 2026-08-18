@@ -23,6 +23,8 @@ public class LignePanierDTO {
     private Long id;
 
 
+    private Long panierId;
+    
     private Long livreId;
 
 

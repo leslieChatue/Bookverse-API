@@ -14,10 +14,13 @@ import com.chatue.bookverse.bookverse_api.dto.LigneCommandeDTO;
 import com.chatue.bookverse.bookverse_api.dto.LignePanierDTO;
 import com.chatue.bookverse.bookverse_api.dto.PanierResponseDTO;
 import com.chatue.bookverse.bookverse_api.dto.request.PaiementRequest;
+import com.chatue.bookverse.bookverse_api.dto.request.UpdateCommandRequest;
+import com.chatue.bookverse.bookverse_api.dto.request.UpdateStockLivreRequest;
 import com.chatue.bookverse.bookverse_api.entity.Commande;
 import com.chatue.bookverse.bookverse_api.entity.Livre;
 import com.chatue.bookverse.bookverse_api.entity.Panier;
 import com.chatue.bookverse.bookverse_api.entity.StatutCommande;
+import com.chatue.bookverse.bookverse_api.exception.RessourceExistException;
 import com.chatue.bookverse.bookverse_api.exception.RessourceNotFoundException;
 import com.chatue.bookverse.bookverse_api.mapper.CommandeMapper;
 import com.chatue.bookverse.bookverse_api.mapper.LivreMapper;
@@ -45,7 +48,7 @@ public class CommandeServiceImpl implements CommandeService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<CommandeResponseDTO> getUtilisateurById(Long utilisateurId) {
-		return commandeMapper.toDtoList(commandeDao.findByUtilisateurId(utilisateurId));
+		return commandeMapper.toDtoList(commandeDao.findByUserId(utilisateurId));
 	}
 
 	@Override
@@ -89,21 +92,23 @@ public class CommandeServiceImpl implements CommandeService {
 
 	@Override
 	@Transactional
-	public void updateStatut(Long id, String statut) {
-		Commande commande =commandeDao.findById(id).orElseThrow(() -> new RessourceNotFoundException("Aucune commande trouvée avec cet id de commande"));
-		if(commande != null) {
-			commande.setStatut(StatutCommande.valueOf(statut));
+	public CommandeResponseDTO updateStatut(Long id , UpdateCommandRequest updateCommandRequest) {
+			Commande commande =commandeDao.findById(id).orElseThrow(() -> new RessourceNotFoundException("Aucune commande trouvée avec cet id de commande : "+id));
+			commande.setStatut(StatutCommande.valueOf(updateCommandRequest.statut()));
 			commandeDao.save(commande);
-		}
-		
+			return commandeMapper.toDto(commande);
 	}
 
 	@Override
 	@Transactional
-	public void saveCommande(Long panierId, PaiementRequest paiementRequest ) {
+	public CommandeResponseDTO saveCommande(Long panierId, PaiementRequest paiementRequest ) {
 		// 1-> Recuperer le panier
-		int totalCommande= (int) commandeDao.count();
+		int totalCommande = (int) commandeDao.count();
 		PanierResponseDTO panier = panierService.getPanierById(panierId);
+		//1.1 -> Je vérifie qu'il n'ya pas déja d'utilisateur avec cette commande
+		if(existsByPanierUserId(panier.getUserId())) {
+			throw new RessourceExistException("Impossible d'ajouter cette commande car une commande est déja attachée a ce panier");
+		}
 		// 2-> a partir des informations du panier remplir la commande
 		Commande commande = new Commande();
 		commande.setDateCommande(LocalDateTime.now());
@@ -123,8 +128,7 @@ public class CommandeServiceImpl implements CommandeService {
 			Livre livreTrouve=livreMapper.toEntity(livreService.getLivreById(lignePanier.get(i).getLivreId()));
 			//Appeler mon service de modification du stock 
 			int nouveauStock=livreTrouve.getStock()-lignePanier.get(i).getQuantite();
-			livreService.updateStockLivre(lignePanier.get(i).getLivreId() ,nouveauStock );
-			
+			livreService.updateStockLivre(lignePanier.get(i).getLivreId() ,new UpdateStockLivreRequest(nouveauStock) );	
 		}
 		//2.3 ->on supprime le panier associé a l'utilisateur dans la base de donnée
 		Panier panierTrouve = panierDao.findById(panierId).orElseThrow(() -> new RessourceNotFoundException("Aucun livre trouvé avec cet id"));
@@ -133,26 +137,32 @@ public class CommandeServiceImpl implements CommandeService {
 		commandeDao.save(commande);
 		//2.5 -> on passe au paiement (à implémenter plus tard)	
 		paiementService.savePaiement(paiementRequest);
+		//2.6 -> Si tout s'est bien passé on retourne la commande
+		return commandeMapper.toDto(commande);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<CommandeResponseDTO> getAllCommandes() {
-		
-		return commandeMapper.toDtoList(commandeDao.findAllCommandes());
+		return commandeMapper.toDtoList(commandeDao.findAll());
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<CommandeResponseDTO> getAllCommandesByUser(Long userId) {
-		
-		 return commandeMapper.toDtoList(commandeDao.findAllCommandesByUser(userId));
+	public List<CommandeResponseDTO> getAllCommandesByUserId(Long userId) {
+		 return commandeMapper.toDtoList(commandeDao.findByUserId(userId));
 	}
 	
 	@Override
 	@Transactional(readOnly = true)
 	public CommandeResponseDTO getCommandeById(Long id) {
 		return commandeMapper.toDto(commandeDao.findById(id).orElseThrow(() -> new RessourceNotFoundException("Aucun livre trouvé avec cet id")));
+	}
+
+	@Override
+	public boolean existsByPanierUserId(Long userId) {
+		
+		return panierDao.existsByUserId(userId);
 	}
 
 }

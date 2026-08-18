@@ -10,5 +10,5 @@ import com.chatue.bookverse.bookverse_api.entity.LigneCommande;
 @Repository
 public interface LigneCommandeDao extends JpaRepository<LigneCommande, Long> {
 
-List<LigneCommande> findLigneCommandeByIdCommande(Long commandeId);
+List<LigneCommande> findByCommandeId(Long commandeId);
 }
